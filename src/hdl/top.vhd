@@ -16,6 +16,10 @@ entity top is
         sys_tck: in std_logic;
         sys_tdi: in std_logic;
         sys_tdo: out std_logic;
+        mspi_do: in std_logic;
+        mspi_di: out std_logic;
+        mspi_cs: out std_logic;
+        mspi_clk: out std_logic
     );
 end;
 
@@ -24,6 +28,7 @@ architecture impl of top is
 
     signal arstn_btn: std_logic;
     signal con_gpio_out: std_ulogic_vector(63 downto 0);
+    signal con_spi_csn: std_ulogic_vector(7 downto 0);
 begin
     clk <= clk5351p;
 
@@ -76,7 +81,9 @@ begin
             -- Processor peripherals --
             IO_GPIO_NUM       => 4,                 -- number of GPIO input/output pairs (0..64)
             IO_MTIME_EN       => true,              -- implement machine system timer (MTIME)?
-            IO_UART0_EN       => true               -- implement primary universal asynchronous receiver/transmitter (UART0)?
+            IO_UART0_EN       => true,              -- implement primary universal asynchronous receiver/transmitter (UART0)?
+            IO_SPI_EN         => true,              -- Used for flash bootloader
+            IO_GPTMR_EN       => true,
         )
         port map (
             -- Global control --
@@ -88,7 +95,11 @@ begin
             jtag_tdo_o  => sys_tdo,
             jtag_tms_i  => sys_tms,
             -- GPIO (available if IO_GPIO_NUM > 0) --
-            gpio_o      => con_gpio_out, -- parallel output
+            -- SPI (available if IO_SPI_EN = true) --
+            spi_clk_o   => mspi_clk,
+            spi_dat_o   => mspi_di,
+            spi_dat_i   => mspi_do,
+            spi_csn_o   => con_spi_csn,
             -- primary UART0 (available if IO_UART0_EN = true) --
             uart0_txd_o => sys_tx,       -- UART0 send data. Connect to BL616
             uart0_rxd_i => sys_rx        -- UART0 receive data. Connect to BL616
@@ -96,4 +107,7 @@ begin
 
     -- LEDs 2 to 5 are driven by software
     sys_led(5 downto 2) <= std_logic_vector(con_gpio_out(3 downto 0));
+    -- CS0 is SPI flash
+    mspi_cs <= con_spi_csn(0);
+
 end;

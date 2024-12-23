@@ -19,3 +19,8 @@ IO_LOC "sys_tms" 5;
 IO_LOC "sys_tck" 6;
 IO_LOC "sys_tdi" 7;
 IO_LOC "sys_tdo" 8;
+
+IO_LOC "mspi_do" 62;
+IO_LOC "mspi_di" 61;
+IO_LOC "mspi_cs" 60;
+IO_LOC "mspi_clk" 59;

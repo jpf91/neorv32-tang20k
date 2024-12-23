@@ -120,6 +120,9 @@ summary: $(RPTDIR)/$(DESIGN).pnr.json
 	@$(SCRIPT_SUMMARY) $<
 
 upload: $(OBJDIR)/$(DESIGN).fs
+	openFPGALoader -b $(BOARD) $<
+
+upload-flash: $(OBJDIR)/$(DESIGN).fs
 	openFPGALoader -b $(BOARD) -f $<
 
 $(OBJDIR):

@@ -11,7 +11,11 @@ entity top is
         key1, key2: in std_logic;
         sys_led: out std_logic_vector(5 downto 0);
         sys_tx: out std_logic;
-        sys_rx: in std_logic
+        sys_rx: in std_logic;
+        sys_tms: in std_logic;
+        sys_tck: in std_logic;
+        sys_tdi: in std_logic;
+        sys_tdo: out std_logic;
     );
 end;
 
@@ -57,6 +61,8 @@ begin
             CLOCK_FREQUENCY   => 100000000,         -- clock frequency of clk_i in Hz
             -- Boot Configuration --
             BOOT_MODE_SELECT  => 0,                 -- boot via internal bootloader
+            -- Enable JTAG / Debugger --
+            OCD_EN            => true,
             -- RISC-V CPU Extensions --
             RISCV_ISA_C       => true,              -- implement compressed extension?
             RISCV_ISA_M       => true,              -- implement mul/div extension?
@@ -76,6 +82,11 @@ begin
             -- Global control --
             clk_i       => clk,          -- global clock, rising edge
             rstn_i      => rstn,         -- global reset, low-active, async
+            -- JTAG for Debugging --
+            jtag_tck_i  => sys_tck,
+            jtag_tdi_i  => sys_tdi,
+            jtag_tdo_o  => sys_tdo,
+            jtag_tms_i  => sys_tms,
             -- GPIO (available if IO_GPIO_NUM > 0) --
             gpio_o      => con_gpio_out, -- parallel output
             -- primary UART0 (available if IO_UART0_EN = true) --

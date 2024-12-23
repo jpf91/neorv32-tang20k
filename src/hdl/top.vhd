@@ -85,6 +85,7 @@ begin
             IO_UART0_EN       => true,              -- implement primary universal asynchronous receiver/transmitter (UART0)?
             IO_SPI_EN         => true,              -- Used for flash bootloader
             IO_GPTMR_EN       => true,
+            IO_DMA_EN         => true
         )
         port map (
             -- Global control --

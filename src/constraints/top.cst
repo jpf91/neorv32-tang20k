@@ -1,0 +1,16 @@
+IO_LOC "clk5351p" 10;
+
+IO_LOC "key1" 88;
+IO_PORT "key1" PULL_MODE=DOWN;
+IO_LOC "key2" 87;
+IO_PORT "key2" PULL_MODE=DOWN;
+
+IO_LOC "sys_tx" 69;
+IO_LOC "sys_rx" 70;
+
+IO_LOC "sys_led[0]" 15;
+IO_LOC "sys_led[1]" 16;
+IO_LOC "sys_led[2]" 17;
+IO_LOC "sys_led[3]" 18;
+IO_LOC "sys_led[4]" 19;
+IO_LOC "sys_led[5]" 20;

@@ -1,0 +1,88 @@
+library ieee;
+use ieee.numeric_std.all;
+use ieee.std_logic_1164.all;
+
+library neorv32;
+use neorv32.neorv32_package.all;
+
+entity top is
+    port (
+        clk5351p: in std_logic;
+        key1, key2: in std_logic;
+        sys_led: out std_logic_vector(5 downto 0);
+        sys_tx: out std_logic;
+        sys_rx: in std_logic
+    );
+end;
+
+architecture impl of top is
+    signal clk, rstn: std_logic;
+
+    signal arstn_btn: std_logic;
+    signal con_gpio_out: std_ulogic_vector(63 downto 0);
+begin
+    clk <= clk5351p;
+
+    -- LED 0 shows if the external clock is available
+    -- Never reset: We want to debug only the clock, not the reset signal
+    blink: entity work.LEDBlink
+        generic map (
+            TOGGLE_CYCLES => 50000000
+        )
+        port map (
+            clk => clk,
+            arstn => '1',
+            led => sys_led(0)
+        );
+
+    -- Basic debouncing and sychrounous de-assert for reset
+    -- Key1 is high-active, so invert
+    arstn_btn <= not key1;
+    rst: entity work.BTNReset
+        generic map (
+            DEBOUNCE_CYCLES => 15
+        )
+        port map (
+            clk => clk,
+            arstn_i => arstn_btn,
+            rstn_o => rstn
+        );
+    -- LED 1 shows if the reset signal is asserted. LED is low active, as is rstn.
+    -- So if the LED is on, the reset is active.
+    sys_led(1) <= rstn;
+
+    neorv: neorv32_top
+        generic map (
+            -- Clocking --
+            CLOCK_FREQUENCY   => 100000000,         -- clock frequency of clk_i in Hz
+            -- Boot Configuration --
+            BOOT_MODE_SELECT  => 0,                 -- boot via internal bootloader
+            -- RISC-V CPU Extensions --
+            RISCV_ISA_C       => true,              -- implement compressed extension?
+            RISCV_ISA_M       => true,              -- implement mul/div extension?
+            RISCV_ISA_Zicntr  => true,              -- implement base counters?
+            -- Internal Instruction memory --
+            MEM_INT_IMEM_EN   => true,              -- implement processor-internal instruction memory
+            MEM_INT_IMEM_SIZE => 2048,              -- size of processor-internal instruction memory in bytes
+            -- Internal Data memory --
+            MEM_INT_DMEM_EN   => true,              -- implement processor-internal data memory
+            MEM_INT_DMEM_SIZE => 1024,              -- size of processor-internal data memory in bytes
+            -- Processor peripherals --
+            IO_GPIO_NUM       => 4,                 -- number of GPIO input/output pairs (0..64)
+            IO_MTIME_EN       => true,              -- implement machine system timer (MTIME)?
+            IO_UART0_EN       => true               -- implement primary universal asynchronous receiver/transmitter (UART0)?
+        )
+        port map (
+            -- Global control --
+            clk_i       => clk,          -- global clock, rising edge
+            rstn_i      => rstn,         -- global reset, low-active, async
+            -- GPIO (available if IO_GPIO_NUM > 0) --
+            gpio_o      => con_gpio_out, -- parallel output
+            -- primary UART0 (available if IO_UART0_EN = true) --
+            uart0_txd_o => sys_tx,       -- UART0 send data. Connect to BL616
+            uart0_rxd_i => sys_rx        -- UART0 receive data. Connect to BL616
+        );
+
+    -- LEDs 2 to 5 are driven by software
+    sys_led(5 downto 2) <= std_logic_vector(con_gpio_out(3 downto 0));
+end;

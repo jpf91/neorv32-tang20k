@@ -28,6 +28,7 @@ architecture impl of top is
 
     signal arstn_btn: std_logic;
     signal con_gpio_out: std_ulogic_vector(63 downto 0);
+    signal con_gpio_in: std_ulogic_vector(63 downto 0) := (others => 'L');
     signal con_spi_csn: std_ulogic_vector(7 downto 0);
 begin
     clk <= clk5351p;
@@ -95,6 +96,8 @@ begin
             jtag_tdo_o  => sys_tdo,
             jtag_tms_i  => sys_tms,
             -- GPIO (available if IO_GPIO_NUM > 0) --
+            gpio_o      => con_gpio_out,
+            gpio_i      => con_gpio_in,
             -- SPI (available if IO_SPI_EN = true) --
             spi_clk_o   => mspi_clk,
             spi_dat_o   => mspi_di,
@@ -107,6 +110,9 @@ begin
 
     -- LEDs 2 to 5 are driven by software
     sys_led(5 downto 2) <= std_logic_vector(con_gpio_out(3 downto 0));
+    -- Input 0 is button 2
+    con_gpio_in(0) <= key2;
+
     -- CS0 is SPI flash
     mspi_cs <= con_spi_csn(0);
 

@@ -36,7 +36,7 @@ NEORV32_VHDL = core/neorv32_package.vhd \
 	core/neorv32_application_image.vhd \
 	core/neorv32_imem.vhd \
 	core/neorv32_dmem.vhd \
-	../../../src/hdl/neorv32_bootloader_image.vhd \
+	../../../src/hdl/neorv32/neorv32_bootloader_image.vhd \
 	core/neorv32_boot_rom.vhd \
 	core/neorv32_xip.vhd \
 	core/neorv32_xbus.vhd \

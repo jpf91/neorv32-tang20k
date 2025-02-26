@@ -75,10 +75,10 @@ begin
             RISCV_ISA_Zicntr  => true,              -- implement base counters?
             -- Internal Instruction memory --
             MEM_INT_IMEM_EN   => true,              -- implement processor-internal instruction memory
-            MEM_INT_IMEM_SIZE => 8096,              -- size of processor-internal instruction memory in bytes
+            MEM_INT_IMEM_SIZE => 24288,              -- size of processor-internal instruction memory in bytes
             -- Internal Data memory --
             MEM_INT_DMEM_EN   => true,              -- implement processor-internal data memory
-            MEM_INT_DMEM_SIZE => 8096,              -- size of processor-internal data memory in bytes
+            MEM_INT_DMEM_SIZE => 16192,              -- size of processor-internal data memory in bytes
             -- Processor peripherals --
             IO_GPIO_NUM       => 4,                 -- number of GPIO input/output pairs (0..64)
             IO_MTIME_EN       => true,              -- implement machine system timer (MTIME)?

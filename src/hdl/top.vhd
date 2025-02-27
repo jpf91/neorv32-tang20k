@@ -7,7 +7,7 @@ use neorv32.neorv32_package.all;
 
 entity top is
     port (
-        clk5351p: in std_logic;
+        sys_clk: in std_logic;
         key1, key2: in std_logic;
         sys_led: out std_logic_vector(5 downto 0);
         sys_tx: out std_logic;
@@ -24,16 +24,25 @@ entity top is
 end;
 
 architecture impl of top is
-    signal clk, rstn: std_logic;
+    signal clk, rstn, pll_locked: std_logic;
 
     signal arstn_btn: std_logic;
     signal con_gpio_out: std_ulogic_vector(63 downto 0);
     signal con_gpio_in: std_ulogic_vector(63 downto 0) := (others => 'L');
     signal con_spi_csn: std_ulogic_vector(7 downto 0);
-begin
-    clk <= clk5351p;
 
-    -- LED 0 shows if the external clock is available
+    component SysPLL is
+        port (
+            sys_clk: in std_logic;
+            enable: in std_logic;
+            clk: out std_logic;
+            locked: out std_logic
+        );
+    end component;
+
+begin
+
+    -- LED 2 shows if the external clock is available
     -- Never reset: We want to debug only the clock, not the reset signal
     blink: entity work.LEDBlink
         generic map (
@@ -42,7 +51,7 @@ begin
         port map (
             clk => clk,
             arstn => '1',
-            led => sys_led(0)
+            led => sys_led(2)
         );
 
     -- Basic debouncing and sychrounous de-assert for reset
@@ -57,14 +66,25 @@ begin
             arstn_i => arstn_btn,
             rstn_o => rstn
         );
-    -- LED 1 shows if the reset signal is asserted. LED is low active, as is rstn.
+    -- LED 0 shows if the reset signal is asserted. LED is low active, as is rstn.
     -- So if the LED is on, the reset is active.
-    sys_led(1) <= rstn;
+    sys_led(0) <= rstn;
+
+
+    -- PLL: Generate 108 MHz from 27 MHz input
+    pll: SysPLL
+        port map (
+            sys_clk => sys_clk,
+            enable => '1',
+            clk => clk,
+            locked => pll_locked
+        );
+    sys_led(1) <= not pll_locked;
 
     neorv: neorv32_top
         generic map (
             -- Clocking --
-            CLOCK_FREQUENCY   => 100000000,         -- clock frequency of clk_i in Hz
+            CLOCK_FREQUENCY   => 108000000,         -- clock frequency of clk_i in Hz
             -- Boot Configuration --
             BOOT_MODE_SELECT  => 0,                 -- boot via internal bootloader
             -- Enable JTAG / Debugger --
@@ -110,7 +130,7 @@ begin
         );
 
     -- LEDs 2 to 5 are driven by software
-    sys_led(5 downto 2) <= std_logic_vector(con_gpio_out(3 downto 0));
+    sys_led(5 downto 3) <= std_logic_vector(con_gpio_out(2 downto 0));
     -- Input 0 is button 2
     con_gpio_in(0) <= key2;
 

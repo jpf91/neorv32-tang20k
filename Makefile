@@ -7,7 +7,7 @@ BOARD = tangnano20k
 
 TOP_MODULE = top
 DESIGN = top
-APP_VERILOG = 
+APP_VERILOG = SysPLL.v
 APP_VHDL = LEDBlink.vhd \
 	BTNReset.vhd \
 	top.vhd
@@ -138,7 +138,7 @@ $(RPTDIR):
 
 # Synthesis. TODO: Support multiple source sets / targets?
 $(OBJDIR)/%.syn.json: $(SYN_VERILOG_PATHS) $(SYN_VHDL_PATHS) | $(OBJDIR) $(RPTDIR)
-	yosys -m ghdl -p "ghdl --work=neorv32 $(SYN_VHDL_PATHS) -e $(TOP_MODULE); synth_gowin -top $(TOP_MODULE) -json $@" \
+	yosys -m ghdl -p "ghdl --work=neorv32 $(SYN_VHDL_PATHS) -e $(TOP_MODULE); read_verilog $(SYN_VERILOG_PATHS); synth_gowin -top $(TOP_MODULE) -json $@" \
 	  $(QUIET_FLAG) -l $(RPTDIR)/$*.syn.log --detailed-timing
 
 # Place and route

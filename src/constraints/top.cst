@@ -1,4 +1,5 @@
-IO_LOC "clk5351p" 10;
+IO_LOC "sys_clk" 4;
+IO_PORT "sys_clk" PULL_MODE=UP;
 
 IO_LOC "key1" 88;
 IO_PORT "key1" PULL_MODE=DOWN;

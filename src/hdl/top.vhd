@@ -5,9 +5,9 @@ use ieee.std_logic_1164.all;
 library neorv32;
 use neorv32.neorv32_package.all;
 
-entity top is
+entity neorv32_ihp is
     port (
-        clk5351p: in std_logic;
+        clk: in std_logic;
         key1, key2: in std_logic;
         sys_led: out std_logic_vector(5 downto 0);
         sys_tx: out std_logic;
@@ -23,15 +23,14 @@ entity top is
     );
 end;
 
-architecture impl of top is
-    signal clk, rstn: std_logic;
+architecture impl of neorv32_ihp is
+    signal rstn: std_logic;
 
     signal arstn_btn: std_logic;
     signal con_gpio_out: std_ulogic_vector(63 downto 0);
     signal con_gpio_in: std_ulogic_vector(63 downto 0) := (others => 'L');
     signal con_spi_csn: std_ulogic_vector(7 downto 0);
 begin
-    clk <= clk5351p;
 
     -- LED 0 shows if the external clock is available
     -- Never reset: We want to debug only the clock, not the reset signal
@@ -66,7 +65,7 @@ begin
             -- Clocking --
             CLOCK_FREQUENCY   => 100000000,         -- clock frequency of clk_i in Hz
             -- Boot Configuration --
-            BOOT_MODE_SELECT  => 0,                 -- boot via internal bootloader
+            BOOT_MODE_SELECT  => 1,                 -- boot via internal bootloader
             -- Enable JTAG / Debugger --
             OCD_EN            => true,
             -- RISC-V CPU Extensions --
@@ -75,10 +74,10 @@ begin
             RISCV_ISA_Zicntr  => true,              -- implement base counters?
             -- Internal Instruction memory --
             MEM_INT_IMEM_EN   => true,              -- implement processor-internal instruction memory
-            MEM_INT_IMEM_SIZE => 24288,              -- size of processor-internal instruction memory in bytes
+            MEM_INT_IMEM_SIZE => 4*4096,              -- size of processor-internal instruction memory in bytes
             -- Internal Data memory --
             MEM_INT_DMEM_EN   => true,              -- implement processor-internal data memory
-            MEM_INT_DMEM_SIZE => 16192,              -- size of processor-internal data memory in bytes
+            MEM_INT_DMEM_SIZE => 4*4096,              -- size of processor-internal data memory in bytes
             -- Processor peripherals --
             IO_GPIO_NUM       => 4,                 -- number of GPIO input/output pairs (0..64)
             IO_MTIME_EN       => true,              -- implement machine system timer (MTIME)?

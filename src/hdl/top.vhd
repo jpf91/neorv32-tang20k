@@ -19,7 +19,8 @@ entity top is
         mspi_do: in std_logic;
         mspi_di: out std_logic;
         mspi_cs: out std_logic;
-        mspi_clk: out std_logic
+        mspi_clk: out std_logic;
+        mspi_wp: out std_logic
     );
 end;
 
@@ -41,6 +42,8 @@ architecture impl of top is
     end component;
 
 begin
+    -- Never write-protect the flash, as bootloader does not un-protect:
+    mspi_wp <= '1';
 
     -- LED 2 shows if the external clock is available
     -- Never reset: We want to debug only the clock, not the reset signal

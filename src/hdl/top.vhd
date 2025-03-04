@@ -42,9 +42,6 @@ architecture impl of top is
     end component;
 
 begin
-    -- Never write-protect the flash, as bootloader does not un-protect:
-    mspi_wp <= '1';
-
     -- LED 2 shows if the external clock is available
     -- Never reset: We want to debug only the clock, not the reset signal
     blink: entity work.LEDBlink
@@ -134,6 +131,8 @@ begin
 
     -- LEDs 2 to 5 are driven by software
     sys_led(5 downto 3) <= std_logic_vector(con_gpio_out(2 downto 0));
+    -- Write protect for flash chip
+    mspi_wp <= std_logic(con_gpio_out(3));
     -- Input 0 is button 2
     con_gpio_in(0) <= key2;
 

@@ -67,6 +67,8 @@ SIMULATION_SETS = i2s_master \
 
 NTHREADS ?= 4
 
+SW_FILE ?= neorv32_exe.bin
+
 ####################################################################################################
 # Abbreviations
 ####################################################################################################
@@ -124,6 +126,9 @@ upload:
 
 upload-flash:
 	openFPGALoader -b $(BOARD) -f $(OBJDIR)/$(DESIGN).fs
+
+upload-app-flash:
+	openFPGALoader -b $(BOARD) -o 0x400000 -f $(SW_FILE)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)

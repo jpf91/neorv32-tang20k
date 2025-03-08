@@ -17,7 +17,9 @@ NEORV32_VHDL = core/neorv32_package.vhd \
 	core/neorv32_clockgate.vhd \
 	core/neorv32_fifo.vhd \
 	core/neorv32_cpu_decompressor.vhd \
+	core/neorv32_cpu_frontend.vhd \
 	core/neorv32_cpu_control.vhd \
+	core/neorv32_cpu_counters.vhd \
 	core/neorv32_cpu_regfile.vhd \
 	core/neorv32_cpu_cp_shifter.vhd \
 	core/neorv32_cpu_cp_muldiv.vhd \
@@ -29,29 +31,29 @@ NEORV32_VHDL = core/neorv32_package.vhd \
 	core/neorv32_cpu_alu.vhd \
 	core/neorv32_cpu_lsu.vhd \
 	core/neorv32_cpu_pmp.vhd \
+	core/neorv32_cpu_icc.vhd \
 	core/neorv32_cpu.vhd \
-	core/neorv32_bus.vhd \
 	core/neorv32_cache.vhd \
+	core/neorv32_bus.vhd \
 	core/neorv32_dma.vhd \
 	core/neorv32_application_image.vhd \
 	core/neorv32_imem.vhd \
 	core/neorv32_dmem.vhd \
-	../../../src/hdl/neorv32/neorv32_bootloader_image.vhd \
-	core/neorv32_boot_rom.vhd \
-	core/neorv32_xip.vhd \
 	core/neorv32_xbus.vhd \
+	core/neorv32_bootloader_image.vhd \
+	core/neorv32_boot_rom.vhd \
 	core/neorv32_cfs.vhd \
 	core/neorv32_sdi.vhd \
 	core/neorv32_gpio.vhd \
 	core/neorv32_wdt.vhd \
-	core/neorv32_mtime.vhd \
+	core/neorv32_clint.vhd \
 	core/neorv32_uart.vhd \
 	core/neorv32_spi.vhd \
 	core/neorv32_twi.vhd \
+	core/neorv32_twd.vhd \
 	core/neorv32_pwm.vhd \
 	core/neorv32_trng.vhd \
 	core/neorv32_neoled.vhd \
-	core/neorv32_xirq.vhd \
 	core/neorv32_gptmr.vhd \
 	core/neorv32_onewire.vhd \
 	core/neorv32_slink.vhd \
@@ -61,6 +63,7 @@ NEORV32_VHDL = core/neorv32_package.vhd \
 	core/neorv32_debug_auth.vhd \
 	core/neorv32_debug_dm.vhd \
 	core/neorv32_top.vhd
+
 
 SIMULATION_SETS = i2s_master \
     sine_generator clock_generator fpga_soc_top fpga_standalone_top

@@ -28,8 +28,9 @@ architecture impl of top is
     signal clk, rstn, pll_locked: std_logic;
 
     signal arstn_btn: std_logic;
-    signal con_gpio_out: std_ulogic_vector(63 downto 0);
-    signal con_gpio_in: std_ulogic_vector(63 downto 0) := (others => 'L');
+    signal rstn_wdt_o: std_ulogic;
+    signal con_gpio_out: std_ulogic_vector(31 downto 0);
+    signal con_gpio_in: std_ulogic_vector(31 downto 0) := (others => 'L');
     signal con_spi_csn: std_ulogic_vector(7 downto 0);
 
     component SysPLL is
@@ -90,7 +91,6 @@ begin
             -- Enable JTAG / Debugger --
             OCD_EN            => true,
             -- RISC-V CPU Extensions --
-            RISCV_ISA_C       => true,              -- implement compressed extension?
             RISCV_ISA_M       => true,              -- implement mul/div extension?
             RISCV_ISA_Zicntr  => true,              -- implement base counters?
             -- Internal Instruction memory --
@@ -101,7 +101,7 @@ begin
             MEM_INT_DMEM_SIZE => 16192,              -- size of processor-internal data memory in bytes
             -- Processor peripherals --
             IO_GPIO_NUM       => 4,                 -- number of GPIO input/output pairs (0..64)
-            IO_MTIME_EN       => true,              -- implement machine system timer (MTIME)?
+            IO_CLINT_EN       => true,              -- implement core local interruptor (CLINT)?
             IO_UART0_EN       => true,              -- implement primary universal asynchronous receiver/transmitter (UART0)?
             IO_SPI_EN         => true,              -- Used for flash bootloader
             IO_GPTMR_EN       => true,
@@ -126,13 +126,14 @@ begin
             spi_csn_o   => con_spi_csn,
             -- primary UART0 (available if IO_UART0_EN = true) --
             uart0_txd_o => sys_tx,       -- UART0 send data. Connect to BL616
-            uart0_rxd_i => sys_rx        -- UART0 receive data. Connect to BL616
+            uart0_rxd_i => sys_rx,        -- UART0 receive data. Connect to BL616
+            rstn_wdt_o => rstn_wdt_o
         );
 
     -- LEDs 2 to 5 are driven by software
     sys_led(5 downto 3) <= std_logic_vector(con_gpio_out(2 downto 0));
-    -- Write protect for flash chip
-    mspi_wp <= std_logic(con_gpio_out(3));
+    -- Write protect (low active) for flash chip
+    mspi_wp <= '1' when rstn_wdt_o = '1' else '0';
     -- Input 0 is button 2
     con_gpio_in(0) <= key2;
 

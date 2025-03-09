@@ -4,6 +4,7 @@
 GOWIN_FAMILY = GW2A-18C
 GOWIN_DEVICE = GW2AR-LV18QN88C8/I7
 BOARD = tangnano20k
+PACK_FLAGS = --jtag_as_gpio
 
 TOP_MODULE = top
 DESIGN = top
@@ -158,4 +159,4 @@ $(OBJDIR)/%.pnr.json $(RPTDIR)/%.pnr.json &: $(OBJDIR)/%.syn.json $(CONDIR)/%.cs
 
 # Bitstream generation / Packing
 $(OBJDIR)/%.fs: $(OBJDIR)/%.pnr.json | $(OBJDIR)
-	gowin_pack -d $(GOWIN_FAMILY) -o $@ $<
+	gowin_pack -d $(GOWIN_FAMILY) $(PACK_FLAGS) -o $@ $<
